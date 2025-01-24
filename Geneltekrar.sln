@@ -1,22 +1,159 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geneltekrar", "Geneltekrar\Geneltekrar.csproj", "{D44ACA13-200E-430C-B66D-E73124415CF6}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D44ACA13-200E-430C-B66D-E73124415CF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D44ACA13-200E-430C-B66D-E73124415CF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D44ACA13-200E-430C-B66D-E73124415CF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D44ACA13-200E-430C-B66D-E73124415CF6}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-EndGlobal
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Geneltekrar
+{
+    internal class Program
+    {
+
+        static Dictionary<String, double> urunler = new Dictionary<string, double>()
+        {
+            {"Elma" , 4},
+            {"Muz"  , 7.5},
+            {"Ananas" , 10 },
+            {"Üzüm ", 12.5 }
+        };
+
+        static Dictionary<String, int> sepet = new Dictionary<String, int>();
+
+       
+
+        static void Main(string[] args)
+        {
+            while (true)
+            {
+                Console.WriteLine("1.Ürün ekle");
+                Console.WriteLine("2.Ürün sil ");
+                Console.WriteLine("3.Sepetti listele");
+                Console.WriteLine("4.Toplam tutar");
+                Console.WriteLine("5.çıkış");
+
+                Console.WriteLine("Seçimizi yapınız [1-5]");
+                int secim = Convert.ToInt32(Console.ReadLine());
+
+                if(secim ==1)
+                {
+                    Console.WriteLine("Ürün adı giriniz: ");
+                    String ürünad = Console.ReadLine();
+                    Console.WriteLine("Miktar giriniz: ");
+                    int ürünmik = Convert.ToInt32(Console.ReadLine());
+                    ürünekle(ürünad, ürünmik);
+
+                }
+                else if (secim == 2)
+                {
+                    Console.WriteLine("Ürün adı giriniz: ");
+                    String ürünad = Console.ReadLine();
+                    Console.WriteLine("Miktar giriniz: ");
+                    int ürünmik = Convert.ToInt32(Console.ReadLine());
+                    ürünsil(ürünad, ürünmik);
+                }
+                else if (secim == 3)
+                {
+                    sepetlistele();
+
+
+                }
+
+                else if (secim == 4)
+                {
+                    toplamtutar();
+                }
+                else if (secim == 5)
+                {
+                    Console.WriteLine("Çıkış yapılıyor ");
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Geçersiz giriş lütfen tekrar deneyiz...");
+                }
+
+
+
+
+            }
+
+
+
+        }
+
+        static void ürünekle(String ürünad, int ürünmik)
+        {
+            if (urunler.ContainsKey(ürünad))
+            {
+                if (sepet.ContainsKey(ürünad))
+                {
+                    sepet[ürünad] += ürünmik;
+                }
+                else
+                {
+                    sepet[ürünad] = ürünmik;
+                }
+                Console.WriteLine($"{ürünmik } adet {ürünad} sepete eklendi..");
+            }
+            else
+            {
+                Console.WriteLine($"{ürünad} bulunamadı...");
+            }
+        }
+
+
+        static void ürünsil(String ürünad, int ürünmik)
+        {
+            if (urunler.ContainsKey(ürünad))
+            {
+                if (sepet[ürünad] > ürünmik)
+                {
+                    sepet[ürünad] -= ürünmik; 
+                    Console.WriteLine($"{ürünmik } adet {ürünad} sepetten çıkarıldı");
+                }
+                else if (sepet[ürünad]==ürünmik)
+                {
+                    Console.WriteLine($"{ürünmik} adetti {ürünad} tamamen sepetten çıkarıldı...");
+                }
+                else
+                {
+                    Console.WriteLine($"Sepette yeterli miktarda {ürünad} yok...");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"{ürünad} sepettiniz de bulunmamakta...");
+            }
+
+
+
+        }
+
+
+        static void sepetlistele()
+        {
+            if (sepet.Count > 0)
+            {
+                Console.WriteLine("Sepetinizde ki ürünler: ");
+                foreach(var item in sepet)
+                {
+                    Console.WriteLine($"- {item.Key} : {item.Value} adet - {urunler [item.Key]} TL/adet");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Sepetiniz boş...");
+            }
+        }
+
+
+        static double  toplamtutar()
+        {
+            double toplam = 0;
+            foreach(var item in sepet)
+            {
+                toplam += urunler[item.Key] * item.Value;
+            }
+            return toplam;
+        }
